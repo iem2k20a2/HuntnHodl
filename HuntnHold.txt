@@ -1,0 +1,413 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © tradeforopp
+
+//@version=5
+indicator("STAS Hunt & Hodl [PS] By Leo", "STAS Hunt & Hodl [PS] By Leo", true, max_labels_count = 500, max_lines_count = 500, max_boxes_count = 500) 
+
+// ---------------------------------------- Constant Functions --------------------------------------------------
+get_line_type(_style) =>
+    result = switch _style
+        'Solid' => line.style_solid
+        'Dotted' => line.style_dotted
+        'Dashed' => line.style_dashed
+    result
+
+get_size(x) =>
+    result = switch x
+        'Auto' => size.auto
+        'Tiny' => size.tiny
+        'Small' => size.small
+        'Normal' => size.normal
+        'Large' => size.large
+        'Huge' => size.huge
+        
+get_table_pos(pos) =>
+    result = switch pos
+        "Bottom Center" => position.bottom_center
+        "Bottom Left" => position.bottom_left
+        "Bottom Right" => position.bottom_right
+        "Middle Center" => position.middle_center
+        "Middle Left" => position.middle_left
+        "Middle Right" => position.middle_right
+        "Top Center" => position.top_center
+        "Top Left" => position.top_left
+        "Top Right" => position.top_right
+// ---------------------------------------- Constant Functions --------------------------------------------------
+
+    
+// ---------------------------------------- Inputs --------------------------------------------------
+var g_SETTINGS      = "Settings"
+max_days            = input.int(3, "Session Drawing Limit", 1, tooltip = "Only this many drawings will be kept on the chart, for each selected drawing type (killzone boxes, pivot lines, open lines, etc.)", group = g_SETTINGS)
+tf_limit            = input.timeframe("30", "Timeframe Limit", tooltip = "Drawings will not appear on timeframes greater than or equal to this", group = g_SETTINGS)
+gmt_tz              = input.string('America/New_York', "Timezone", options = ['America/New_York','GMT-12','GMT-11','GMT-10','GMT-9','GMT-8','GMT-7','GMT-6','GMT-5','GMT-4','GMT-3','GMT-2','GMT-1','GMT+0','GMT+1','GMT+2','GMT+3','GMT+4','GMT+5','GMT+6','GMT+7','GMT+8','GMT+9','GMT+10','GMT+11','GMT+12','GMT+13','GMT+14'], tooltip = "Note GMT is not adjusted to reflect Daylight Saving Time changes", group = g_SETTINGS)
+lbl_size            = get_size(input.string('Small', "Label Size", options = ['Auto', 'Tiny', 'Small', 'Normal', 'Large', 'Huge'], tooltip = "The size of all labels", group = g_SETTINGS))
+
+var g_KZ            = "Killzones"
+show_kz             = input.bool(true, "Show Killzone Boxes", inline = "KZ", group = g_KZ)
+show_kz_text        = input.bool(true, "Display Text", inline = "KZ", group = g_KZ)
+
+use_london = input.bool(true, 'LDN', inline = 'LDN', group = g_KZ)
+//lo_txt = input.string('LDN', '', inline = 'LDN', group = g_KZ)
+//london = input.session('0200-0500', '', inline = 'LDN', group = g_KZ)
+lo_color = input.color(#ea5f58, '  Box', inline = 'LDN', group = g_KZ)
+
+use_nyam = input.bool(true, 'HUNT', inline = 'HUNT', group = g_KZ)
+//na_txt = input.string('HUNT', '', inline = 'HUNT', group = g_KZ)
+//nyam = input.session('0700-1200', '', inline = 'HUNT', group = g_KZ)
+na_color = input.color(#02acc3, '  Box', inline = 'HUNT', group = g_KZ)
+
+use_nylu = input.bool(true, 'HODL', inline = 'HODL', group = g_KZ)
+//nl_txt = input.string('HODL', '', inline = 'HODL', group = g_KZ)
+//nylu = input.session('1200-1915', '', inline = 'HODL', group = g_KZ)
+nl_color = input.color(#1848cc, '  Box', inline = 'HODL', group = g_KZ)
+
+use_nypm = input.bool(true, 'NY', inline = 'NY', group = g_KZ)
+//np_txt = input.string('NY', '', inline = 'NY', group = g_KZ)
+//nypm = input.session('0930-1100', '', inline = 'NY', group = g_KZ)
+np_color = input.color(#fcee73, '  Box', inline = 'NY', group = g_KZ)
+
+box_transparency    = input.int(80, "Box Transparency", 0, 100,inline = 'BX',  group = g_KZ)
+text_transparency   = input.int(40, "Text Transparency", 0, 100,inline = 'BX',   group = g_KZ)
+
+var g_DWM           = "Day - Week - Month"
+show_d_open         = input.bool(true, "Daily Open", inline = "DO", group = g_DWM)
+d_color             = input.color(#02acc3, "  Bar color", inline = "DO", group = g_DWM)
+i_txtcol            = input.color(#02acc3, "  Text color", inline="DO",  group = g_DWM)
+
+show_w_open         = input.bool(true, "Weekly Open", inline = "WO", group = g_DWM)
+w_color             = input.color(#1848cc, "  Bar color", inline = "WO", group = g_DWM)
+w_txt_color           = input.color(#1848cc, "  Text color", inline = "WO", group = g_DWM)
+
+show_m_open         = input.bool(false, "Monthly Open", inline = "MO", group = g_DWM)
+m_color             = input.color(color.rgb(82, 171, 255), "  Bar color", inline = "MO", group = g_DWM)
+m_txt_color         = input.color(color.rgb(82, 171, 255), "  Text color", inline = "MO", group = g_DWM)
+
+htf_style           = get_line_type(input.string(defval = 'Solid', title = "Style", options = ['Solid', 'Dotted', 'Dashed'], inline = "D0", group = g_DWM))
+htf_width           = input.int(1, "", inline = "D0", group = g_DWM)
+
+
+//i_time              = input.session     ('0000-0015:1234567', "New York", tooltip="Different exchanges will have difference time zones so change accordingly.")
+// MISC
+nymid               = time              ("1", '0000-0015:1234567', gmt_tz)
+hourtime            = 86400000
+
+var l_det           = "Liquidity Detectors"
+
+g_EHL_E = input.bool(true, 'Enable Micro', inline="EHL", group = l_det)
+waitForConfirmation = input.bool(true, 'Wait For Confirmation', inline="EHL", group = l_det)
+mcolor             = input.color(color.rgb(148, 148, 148), "  Label", inline = "EHL", group = l_det)
+
+g_EHL_E2 = input.bool(true, 'Enable Macro', inline="EHL2", group = l_det)
+waitForConfirmation2 = input.bool(true, 'Wait For Confirmation', inline="EHL2",  group = l_det)
+Mcolor             = input.color(color.rgb(148, 148, 148), "  Label", inline = "EHL2", group = l_det)
+
+
+
+// ---------------------------------------- Inputs --------------------------------------------------
+
+
+// ---------------------------------------- Variables & Constants --------------------------------------------------
+type kz
+    string _title
+
+    box[] _box
+
+    line[] _hi_line
+    line[] _md_line
+    line[] _lo_line
+
+    label[] _hi_label
+    label[] _lo_label
+
+    bool[] _hi_valid
+    bool[] _md_valid
+    bool[] _lo_valid
+
+    float[] _range_store
+    float _range_current
+
+type hz
+    line[] LN
+    label[] LB
+    bool[] CO
+
+type dwm_hl
+    line[] hi_line
+    line[] lo_line
+    label[] hi_label
+    label[] lo_label
+    bool hit_high = false
+    bool hit_low = false
+
+type dwm_info
+    string tf
+    float o = na
+    float h = na
+    float l = na
+    float ph = na
+    float pl = na
+
+var lo_kz = kz.new("LDN", array.new_box(), array.new_line(), array.new_line(), array.new_line(), array.new_label(), array.new_label(), array.new_bool(), array.new_bool(), array.new_bool(), array.new_float())
+var na_kz = kz.new("HUNT", array.new_box(), array.new_line(), array.new_line(), array.new_line(), array.new_label(), array.new_label(), array.new_bool(), array.new_bool(), array.new_bool(), array.new_float())
+var nl_kz = kz.new("HODL", array.new_box(), array.new_line(), array.new_line(), array.new_line(), array.new_label(), array.new_label(), array.new_bool(), array.new_bool(), array.new_bool(), array.new_float())
+var np_kz = kz.new("NY", array.new_box(), array.new_line(), array.new_line(), array.new_line(), array.new_label(), array.new_label(), array.new_bool(), array.new_bool(), array.new_bool(), array.new_float())
+
+var d_hl = dwm_hl.new(array.new_line(), array.new_line(), array.new_label(), array.new_label())
+var w_hl = dwm_hl.new(array.new_line(), array.new_line(), array.new_label(), array.new_label())
+var m_hl = dwm_hl.new(array.new_line(), array.new_line(), array.new_label(), array.new_label())
+
+var d_info = dwm_info.new("D")
+var w_info = dwm_info.new("W")
+var m_info = dwm_info.new("M")
+
+t_lo = not na(time("", "0200-0500", gmt_tz))
+t_na = not na(time("", "0700-1200", gmt_tz))
+t_nl = not na(time("", "1200-1915", gmt_tz))
+t_np = not na(time("", "0930-1100", gmt_tz))
+
+var d_sep_line = array.new_line()
+var w_sep_line = array.new_line()
+var m_sep_line = array.new_line()
+
+var d_line = array.new_line()
+var w_line = array.new_line()
+var m_line = array.new_line()
+
+var d_label = array.new_label()
+var w_label = array.new_label()
+var m_label = array.new_label()
+
+var v1_line = array.new_line()
+var v2_line = array.new_line()
+var v3_line = array.new_line()
+var v4_line = array.new_line()
+
+var transparent = #ffffff00
+
+update_dwm_info(dwm_info n) =>
+    if timeframe.change(n.tf)
+        n.ph := n.h
+        n.pl := n.l
+        n.o := open
+        n.h := high
+        n.l := low
+    else
+        n.h := math.max(high, n.h)
+        n.l := math.min(low,  n.l)
+
+if show_d_open
+    update_dwm_info(d_info)
+if show_w_open
+    update_dwm_info(w_info)
+if show_m_open
+    update_dwm_info(m_info)
+// ---------------------------------------- Variables & Constants --------------------------------------------------
+
+
+// ---------------------------------------- Functions --------------------------------------------------
+get_box_color(color c) =>
+    result = color.new(c, box_transparency)
+    
+get_text_color(color c) =>
+    result = color.new(c, text_transparency)
+// ---------------------------------------- Functions --------------------------------------------------
+
+
+// ---------------------------------------- Core Logic --------------------------------------------------
+dwm_sep(string tf, bool use, line[] arr, color col) =>
+    if use
+        if timeframe.change(tf)
+            arr.unshift(line.new(bar_index, high * 1.0001, bar_index, low, style = htf_style, width = htf_width, extend = extend.both, color = col))
+                
+
+w_open(string tf, bool use, line[] lns, label[] lbls, dwm_info n, color col) =>
+    if use
+        if lns.size() > 0
+            lns.get(0).set_x2(time)
+            lbls.get(0).set_x(time)
+        if timeframe.change(tf)
+            lns.unshift(line.new(time, n.o, time, n.o, xloc = xloc.bar_time, style = htf_style, width = htf_width, color = col))
+            lbls.unshift(label.new(nymid + hourtime, open, "Weekly Open | " + str.tostring(math.round_to_mintick(open)), xloc.bar_time, yloc.price, na, label.style_none, w_txt_color))
+
+m_open(string tf, bool use, line[] lns, label[] lbls, dwm_info n, color col) =>
+    if use
+        if lns.size() > 0
+            lns.get(0).set_x2(time)
+            lbls.get(0).set_x(time)
+        if timeframe.change(tf)
+            lns.unshift(line.new(time, n.o, time, n.o, xloc = xloc.bar_time, style = htf_style, width = htf_width, color = col))
+            lbls.unshift(label.new(nymid + hourtime, open, "Monthly Open | " + str.tostring(math.round_to_mintick(open)), xloc.bar_time, yloc.price, na, label.style_none, m_txt_color))
+
+dwm() =>
+    if timeframe.in_seconds("") <= timeframe.in_seconds(tf_limit)
+        w_open("W", show_w_open, w_line, w_label, w_info, w_color)
+        m_open("M", show_m_open, m_line, m_label, m_info, m_color)
+
+
+del_kz(kz k) =>
+    if k._box.size() > max_days
+        k._box.pop().delete()
+    if k._hi_line.size() > max_days
+        k._hi_line.pop().delete()
+        k._lo_line.pop().delete()
+        k._hi_valid.pop()
+        k._lo_valid.pop()
+    if k._hi_label.size() > max_days
+        k._hi_label.pop().delete()
+        k._lo_label.pop().delete()
+
+update_price_string(label L, float P) =>
+    S = L.get_text()
+    pre = str.substring(S, 0, str.pos(S, " ")) 
+    str.trim(pre)
+    L.set_text(str.format("{0} ({1})", pre, P))
+
+adjust_in_kz(kz kz, bool t) =>
+    if t
+        kz._box.get(0).set_right(time)
+        kz._box.get(0).set_top(math.max(kz._box.get(0).get_top(), high))
+        kz._box.get(0).set_bottom(math.min(kz._box.get(0).get_bottom(), low))
+        kz._range_current := kz._box.get(0).get_top() - kz._box.get(0).get_bottom()
+
+adjust_out_kz(kz kz, bool t) =>
+    if not t and kz._box.size() > 0
+        if t[1]
+            array.unshift(kz._range_store, kz._range_current)
+
+
+manage_kz(kz kz, bool use, bool t, color c, string box_txt, string hi_txt, string lo_txt) => 
+    if timeframe.in_seconds("") <= timeframe.in_seconds(tf_limit) and use
+        if t and not t[1]
+            _c = get_box_color(c)
+            _t = get_text_color(c)
+            kz._box.unshift(box.new(time, high, time, low, xloc = xloc.bar_time, border_color = show_kz ? _c : na, bgcolor = show_kz ? _c : na, text = (show_kz and show_kz_text) ? box_txt : na, text_color = _t))
+
+        adjust_in_kz(kz, t)
+        adjust_out_kz(kz, t)
+
+manage_kz(lo_kz, use_london, t_lo, lo_color, "LDN", "", "")
+manage_kz(na_kz, use_nyam, t_na, na_color, "HUNT",  "", "")
+manage_kz(nl_kz, use_nylu, t_nl, nl_color, "HODL",  "", "")
+manage_kz(np_kz, use_nypm, t_np, np_color, "NY", "", "")
+
+dwm()
+
+var openprice       = 0.0
+if nymid
+    if not nymid[1]
+        openprice := open
+    else
+        openprice := math.max(open, openprice)
+
+// OBJECTS
+var label lb = na
+if openprice != openprice[1] and show_d_open
+    var line lne = na
+    line.set_x2(lne, nymid)
+    line.set_extend(lne, extend.none)
+    lne := line.new(nymid, openprice, nymid + hourtime , openprice, xloc.bar_time, extend.none, d_color, htf_style, htf_width)
+    lb  := label.new(nymid + hourtime, openprice, "Daily Open | " + str.tostring(math.round_to_mintick(openprice)), xloc.bar_time, yloc.price, na, label.style_none, i_txtcol)
+    label.delete(lb[1])
+
+if g_EHL_E
+    var pivotLength = 5
+    var confluenceAtrLength = 200
+    var threshold = 0.10
+    atr = ta.atr(confluenceAtrLength)
+
+    ph = ta.pivothigh(pivotLength, 1)
+    pl = ta.pivotlow(pivotLength, 1)
+
+    if waitForConfirmation
+        ph := ta.pivothigh(pivotLength, pivotLength)
+        pl := ta.pivotlow(pivotLength, pivotLength)
+        pl
+
+    var previousHigh = 0.
+    var highLocX = 0
+
+    if bool(ph)
+        max = math.max(ph, previousHigh)
+        min = math.min(ph, previousHigh)
+
+        if max < min + atr * threshold
+            drawHighLine = line.new(highLocX, previousHigh, waitForConfirmation ? bar_index - pivotLength : bar_index - 1, ph, color = color.red, style = line.style_solid)
+            drawHighLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, highLocX)), ph, 'mEQH', color = #00000000, textcolor =  mcolor, style = label.style_label_down, size = size.small)
+            drawHighLabel
+
+        previousHigh := ph
+        highLocX := waitForConfirmation ? bar_index - pivotLength : bar_index - 1
+        highLocX
+
+    var previousLow = 0.
+    var lowLocX = 0
+
+    if bool(pl)
+        max = math.max(pl, previousLow)
+        min = math.min(pl, previousLow)
+
+        if min > max - atr * threshold
+            drawLowLine = line.new(lowLocX, previousLow, waitForConfirmation ? bar_index - pivotLength : bar_index - 1, pl, color = color.green, style = line.style_solid)
+            drawLowLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, lowLocX)), pl, 'mEQL', color = #00000000, textcolor = mcolor, style = label.style_label_up, size = size.small)
+            drawLowLabel
+
+        previousLow := pl
+        lowLocX := waitForConfirmation ? bar_index - pivotLength : bar_index - 1
+
+
+
+
+
+
+
+
+
+
+if g_EHL_E2
+    var pivotLength2 = 40
+    var confluenceAtrLength2 = 500
+    var threshold2 = 0.20
+    atr2 = ta.atr(confluenceAtrLength2)
+
+    ph2 = ta.pivothigh(pivotLength2, 1)
+    pl2 = ta.pivotlow(pivotLength2, 1)
+
+    if waitForConfirmation2
+        ph2 := ta.pivothigh(pivotLength2, pivotLength2)
+        pl2 := ta.pivotlow(pivotLength2, pivotLength2)
+        pl2
+
+    var previousHigh2 = 0.
+    var highLocX2 = 0
+
+    if bool(ph2)
+        max2 = math.max(ph2, previousHigh2)
+        min2 = math.min(ph2, previousHigh2)
+
+        if max2 < min2 + atr2 * threshold2
+            drawHighLine2 = line.new(highLocX2, previousHigh2, waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, ph2, color = color.red, style = line.style_solid)
+            drawHighLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, highLocX2)), ph2, 'MEQH', color = #00000000, textcolor = Mcolor, style = label.style_label_down, size = size.small)
+            drawHighLabel2
+
+        previousHigh2 := ph2
+        highLocX2 := waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1
+        highLocX2
+
+    var previousLow2 = 0.
+    var lowLocX2 = 0
+
+    if bool(pl2)
+        max2 = math.max(pl2, previousLow2)
+        min2 = math.min(pl2, previousLow2)
+
+        if min2 > max2 - atr2 * threshold2
+            drawLowLine2 = line.new(lowLocX2, previousLow2, waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, pl2, color = color.green, style = line.style_solid)
+            drawLowLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, lowLocX2)), pl2, 'MEQL', color = #00000000, textcolor = Mcolor, style = label.style_label_up, size = size.small)
+            drawLowLabel2
+
+        previousLow2 := pl2
+        lowLocX2 := waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1
+
+
+
+// ---------------------------------------- Core Logic --------------------------------------------------
