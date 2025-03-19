@@ -70,17 +70,17 @@ box_transparency    = input.int(80, "Box Transparency", 0, 100,inline = 'BX',  g
 text_transparency   = input.int(40, "Text Transparency", 0, 100,inline = 'BX',   group = g_KZ)
 
 var g_DWM           = "Day - Week - Month"
-show_d_open         = input.bool(true, "Daily Open", inline = "DO", group = g_DWM)
-d_color             = input.color(#02acc3, "  Bar color", inline = "DO", group = g_DWM)
-i_txtcol            = input.color(#02acc3, "  Text color", inline="DO",  group = g_DWM)
+show_d_open         = input.bool(true, "NY Daily Open", inline = "DO", group = g_DWM)
+d_color             = input.color(#02acc3, "  Bar", inline = "DO", group = g_DWM)
+i_txtcol            = input.color(#02acc3, "  Text", inline="DO",  group = g_DWM)
 
 show_w_open         = input.bool(true, "Weekly Open", inline = "WO", group = g_DWM)
-w_color             = input.color(#1848cc, "  Bar color", inline = "WO", group = g_DWM)
-w_txt_color           = input.color(#1848cc, "  Text color", inline = "WO", group = g_DWM)
+w_color             = input.color(#1848cc, "  Bar", inline = "WO", group = g_DWM)
+w_txt_color           = input.color(#1848cc, "  Text", inline = "WO", group = g_DWM)
 
-show_m_open         = input.bool(false, "Monthly Open", inline = "MO", group = g_DWM)
-m_color             = input.color(color.rgb(82, 171, 255), "  Bar color", inline = "MO", group = g_DWM)
-m_txt_color         = input.color(color.rgb(82, 171, 255), "  Text color", inline = "MO", group = g_DWM)
+show_m_open         = input.bool(true, "Monthly Open", inline = "MO", group = g_DWM)
+m_color             = input.color(#ffeb3c, "  Bar", inline = "MO", group = g_DWM)
+m_txt_color         = input.color(#ffeb3c, "  Text", inline = "MO", group = g_DWM)
 
 htf_style           = get_line_type(input.string(defval = 'Solid', title = "Style", options = ['Solid', 'Dotted', 'Dashed'], inline = "D0", group = g_DWM))
 htf_width           = input.int(1, "", inline = "D0", group = g_DWM)
@@ -93,11 +93,11 @@ hourtime            = 86400000
 
 var l_det           = "Liquidity Detectors"
 
-g_EHL_E = input.bool(true, 'Enable Micro', inline="EHL", group = l_det)
+g_EHL_E = input.bool(true, 'Enable Stops', inline="EHL", group = l_det)
 waitForConfirmation = input.bool(true, 'Wait For Confirmation', inline="EHL", group = l_det)
 mcolor             = input.color(color.rgb(148, 148, 148), "  Label", inline = "EHL", group = l_det)
 
-g_EHL_E2 = input.bool(true, 'Enable Macro', inline="EHL2", group = l_det)
+g_EHL_E2 = input.bool(true, 'Enable Big Stops', inline="EHL2", group = l_det)
 waitForConfirmation2 = input.bool(true, 'Wait For Confirmation', inline="EHL2",  group = l_det)
 Mcolor             = input.color(color.rgb(148, 148, 148), "  Label", inline = "EHL2", group = l_det)
 
