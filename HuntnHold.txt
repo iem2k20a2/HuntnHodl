@@ -59,7 +59,7 @@ na_color = input.color(#02acc3, '  Box', inline = 'HUNT', group = g_KZ)
 use_nylu = input.bool(true, 'HODL', inline = 'HODL', group = g_KZ)
 //nl_txt = input.string('HODL', '', inline = 'HODL', group = g_KZ)
 //nylu = input.session('1200-1915', '', inline = 'HODL', group = g_KZ)
-nl_color = input.color(#1848cc, '  Box', inline = 'HODL', group = g_KZ)
+nl_color = input.color(#02acc3, '  Box', inline = 'HODL', group = g_KZ)
 
 use_nypm = input.bool(true, 'NY', inline = 'NY', group = g_KZ)
 //np_txt = input.string('NY', '', inline = 'NY', group = g_KZ)
@@ -332,7 +332,7 @@ if g_EHL_E
 
         if max < min + atr * threshold
             drawHighLine = line.new(highLocX, previousHigh, waitForConfirmation ? bar_index - pivotLength : bar_index - 1, ph, color = color.red, style = line.style_solid)
-            drawHighLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, highLocX)), ph, 'mEQH', color = #00000000, textcolor =  mcolor, style = label.style_label_down, size = size.small)
+            drawHighLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, highLocX)), ph, 'Stops', color = #00000000, textcolor =  mcolor, style = label.style_label_down, size = size.small)
             drawHighLabel
 
         previousHigh := ph
@@ -348,7 +348,7 @@ if g_EHL_E
 
         if min > max - atr * threshold
             drawLowLine = line.new(lowLocX, previousLow, waitForConfirmation ? bar_index - pivotLength : bar_index - 1, pl, color = color.green, style = line.style_solid)
-            drawLowLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, lowLocX)), pl, 'mEQL', color = #00000000, textcolor = mcolor, style = label.style_label_up, size = size.small)
+            drawLowLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, lowLocX)), pl, 'Stops', color = #00000000, textcolor = mcolor, style = label.style_label_up, size = size.small)
             drawLowLabel
 
         previousLow := pl
@@ -386,7 +386,7 @@ if g_EHL_E2
 
         if max2 < min2 + atr2 * threshold2
             drawHighLine2 = line.new(highLocX2, previousHigh2, waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, ph2, color = color.red, style = line.style_solid)
-            drawHighLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, highLocX2)), ph2, 'MEQH', color = #00000000, textcolor = Mcolor, style = label.style_label_down, size = size.small)
+            drawHighLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, highLocX2)), ph2, 'Big Stops', color = #00000000, textcolor = Mcolor, style = label.style_label_down, size = size.small)
             drawHighLabel2
 
         previousHigh2 := ph2
@@ -402,7 +402,7 @@ if g_EHL_E2
 
         if min2 > max2 - atr2 * threshold2
             drawLowLine2 = line.new(lowLocX2, previousLow2, waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, pl2, color = color.green, style = line.style_solid)
-            drawLowLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, lowLocX2)), pl2, 'MEQL', color = #00000000, textcolor = Mcolor, style = label.style_label_up, size = size.small)
+            drawLowLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, lowLocX2)), pl2, 'Big Stops', color = #00000000, textcolor = Mcolor, style = label.style_label_up, size = size.small)
             drawLowLabel2
 
         previousLow2 := pl2
