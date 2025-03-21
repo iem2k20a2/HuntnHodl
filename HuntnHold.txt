@@ -101,7 +101,9 @@ g_EHL_E2 = input.bool(true, 'Enable Big Stops', inline="EHL2", group = l_det)
 waitForConfirmation2 = input.bool(true, 'Wait For Confirmation', inline="EHL2",  group = l_det)
 Mcolor             = input.color(color.rgb(148, 148, 148), "  Label", inline = "EHL2", group = l_det)
 
-
+// g_EHL_E3 = input.bool(true, 'Enable Big Stops', inline="EHL3", group = l_det)
+// waitForConfirmation3 = input.bool(true, 'Wait For Confirmation', inline="EHL3",  group = l_det)
+// ecolor             = input.color(color.rgb(148, 148, 148), "  Label", inline = "EHL3", group = l_det)
 
 // ---------------------------------------- Inputs --------------------------------------------------
 
@@ -309,16 +311,68 @@ if openprice != openprice[1] and show_d_open
     lb  := label.new(nymid + hourtime, openprice, "Daily Open | " + str.tostring(math.round_to_mintick(openprice)), xloc.bar_time, yloc.price, na, label.style_none, i_txtcol)
     label.delete(lb[1])
 
-if g_EHL_E
-    var pivotLength = 5
-    var confluenceAtrLength = 200
-    var threshold = 0.10
+
+// if g_EHL_E
+//     print_eql(5, 200, 0.10, 'Stops', mcolor)
+
+// if g_EHL_E
+//     var pivotLength = 5
+//     var confluenceAtrLength = 200
+//     var threshold = 0.10
+//     atr = ta.atr(confluenceAtrLength)
+
+//     ph = ta.pivothigh(pivotLength, 1)
+//     pl = ta.pivotlow(pivotLength, 1)
+
+//     if waitForConfirmation
+//         ph := ta.pivothigh(pivotLength, pivotLength)
+//         pl := ta.pivotlow(pivotLength, pivotLength)
+//         pl
+
+//     var previousHigh = 0.
+//     var highLocX = 0
+
+//     if bool(ph)
+//         max = math.max(ph, previousHigh)
+//         min = math.min(ph, previousHigh)
+
+//         if max < min + atr * threshold
+//             drawHighLine = line.new(highLocX, previousHigh, waitForConfirmation ? bar_index - pivotLength : bar_index - 1, ph, color = color.red, style = line.style_solid)
+//             drawHighLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, highLocX)), ph, 'Stops', color = #00000000, textcolor =  mcolor, style = label.style_label_down, size = size.small)
+//             drawHighLabel
+
+//         previousHigh := ph
+//         highLocX := waitForConfirmation ? bar_index - pivotLength : bar_index - 1
+//         highLocX
+
+//     var previousLow = 0.
+//     var lowLocX = 0
+
+//     if bool(pl)
+//         max = math.max(pl, previousLow)
+//         min = math.min(pl, previousLow)
+
+//         if min > max - atr * threshold
+//             drawLowLine = line.new(lowLocX, previousLow, waitForConfirmation ? bar_index - pivotLength : bar_index - 1, pl, color = color.green, style = line.style_solid)
+//             drawLowLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, lowLocX)), pl, 'Stops', color = #00000000, textcolor = mcolor, style = label.style_label_up, size = size.small)
+//             drawLowLabel
+
+//         previousLow := pl
+//         lowLocX := waitForConfirmation ? bar_index - pivotLength : bar_index - 1
+
+
+
+
+print_eql(int pivotLength, int confluenceAtrLength, float threshold, bool waitForC, string title, color eColor) =>
+    //var pivotLength = 5
+    //var confluenceAtrLength = 200
+    //var threshold = 0.10
     atr = ta.atr(confluenceAtrLength)
 
     ph = ta.pivothigh(pivotLength, 1)
     pl = ta.pivotlow(pivotLength, 1)
 
-    if waitForConfirmation
+    if waitForC
         ph := ta.pivothigh(pivotLength, pivotLength)
         pl := ta.pivotlow(pivotLength, pivotLength)
         pl
@@ -331,12 +385,12 @@ if g_EHL_E
         min = math.min(ph, previousHigh)
 
         if max < min + atr * threshold
-            drawHighLine = line.new(highLocX, previousHigh, waitForConfirmation ? bar_index - pivotLength : bar_index - 1, ph, color = color.red, style = line.style_solid)
-            drawHighLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, highLocX)), ph, 'Stops', color = #00000000, textcolor =  mcolor, style = label.style_label_down, size = size.small)
+            drawHighLine = line.new(highLocX, previousHigh, waitForC ? bar_index - pivotLength : bar_index - 1, ph, color = color.red, style = line.style_solid)
+            drawHighLabel = label.new(int(math.avg(waitForC ? bar_index - pivotLength : bar_index - 1, highLocX)), ph, title, color = #00000000, textcolor =  eColor, style = label.style_label_down, size = size.small)
             drawHighLabel
 
         previousHigh := ph
-        highLocX := waitForConfirmation ? bar_index - pivotLength : bar_index - 1
+        highLocX := waitForC ? bar_index - pivotLength : bar_index - 1
         highLocX
 
     var previousLow = 0.
@@ -348,65 +402,64 @@ if g_EHL_E
 
         if min > max - atr * threshold
             drawLowLine = line.new(lowLocX, previousLow, waitForConfirmation ? bar_index - pivotLength : bar_index - 1, pl, color = color.green, style = line.style_solid)
-            drawLowLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, lowLocX)), pl, 'Stops', color = #00000000, textcolor = mcolor, style = label.style_label_up, size = size.small)
+            drawLowLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, lowLocX)), pl, title, color = #00000000, textcolor = eColor, style = label.style_label_up, size = size.small)
             drawLowLabel
 
         previousLow := pl
         lowLocX := waitForConfirmation ? bar_index - pivotLength : bar_index - 1
 
-
-
-
-
-
-
-
-
+if g_EHL_E
+    print_eql(5, 200, 0.1, waitForConfirmation, 'Stops', mcolor)
+    print_eql(9, 200, 0.1, waitForConfirmation, 'Stops', mcolor)
 
 if g_EHL_E2
-    var pivotLength2 = 40
-    var confluenceAtrLength2 = 500
-    var threshold2 = 0.20
-    atr2 = ta.atr(confluenceAtrLength2)
+    print_eql(40, 500, 0.2, waitForConfirmation2, 'Big Stops', Mcolor)
 
-    ph2 = ta.pivothigh(pivotLength2, 1)
-    pl2 = ta.pivotlow(pivotLength2, 1)
 
-    if waitForConfirmation2
-        ph2 := ta.pivothigh(pivotLength2, pivotLength2)
-        pl2 := ta.pivotlow(pivotLength2, pivotLength2)
-        pl2
+// if g_EHL_E2
+//     var pivotLength2 = 40
+//     var confluenceAtrLength2 = 500
+//     var threshold2 = 0.20
+//     atr2 = ta.atr(confluenceAtrLength2)
 
-    var previousHigh2 = 0.
-    var highLocX2 = 0
+//     ph2 = ta.pivothigh(pivotLength2, 1)
+//     pl2 = ta.pivotlow(pivotLength2, 1)
 
-    if bool(ph2)
-        max2 = math.max(ph2, previousHigh2)
-        min2 = math.min(ph2, previousHigh2)
+//     if waitForConfirmation2
+//         ph2 := ta.pivothigh(pivotLength2, pivotLength2)
+//         pl2 := ta.pivotlow(pivotLength2, pivotLength2)
+//         pl2
 
-        if max2 < min2 + atr2 * threshold2
-            drawHighLine2 = line.new(highLocX2, previousHigh2, waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, ph2, color = color.red, style = line.style_solid)
-            drawHighLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, highLocX2)), ph2, 'Big Stops', color = #00000000, textcolor = Mcolor, style = label.style_label_down, size = size.small)
-            drawHighLabel2
+//     var previousHigh2 = 0.
+//     var highLocX2 = 0
 
-        previousHigh2 := ph2
-        highLocX2 := waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1
-        highLocX2
+//     if bool(ph2)
+//         max2 = math.max(ph2, previousHigh2)
+//         min2 = math.min(ph2, previousHigh2)
 
-    var previousLow2 = 0.
-    var lowLocX2 = 0
+//         if max2 < min2 + atr2 * threshold2
+//             drawHighLine2 = line.new(highLocX2, previousHigh2, waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, ph2, color = color.red, style = line.style_solid)
+//             drawHighLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, highLocX2)), ph2, 'Big Stops', color = #00000000, textcolor = Mcolor, style = label.style_label_down, size = size.small)
+//             drawHighLabel2
 
-    if bool(pl2)
-        max2 = math.max(pl2, previousLow2)
-        min2 = math.min(pl2, previousLow2)
+//         previousHigh2 := ph2
+//         highLocX2 := waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1
+//         highLocX2
 
-        if min2 > max2 - atr2 * threshold2
-            drawLowLine2 = line.new(lowLocX2, previousLow2, waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, pl2, color = color.green, style = line.style_solid)
-            drawLowLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, lowLocX2)), pl2, 'Big Stops', color = #00000000, textcolor = Mcolor, style = label.style_label_up, size = size.small)
-            drawLowLabel2
+//     var previousLow2 = 0.
+//     var lowLocX2 = 0
 
-        previousLow2 := pl2
-        lowLocX2 := waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1
+//     if bool(pl2)
+//         max2 = math.max(pl2, previousLow2)
+//         min2 = math.min(pl2, previousLow2)
+
+//         if min2 > max2 - atr2 * threshold2
+//             drawLowLine2 = line.new(lowLocX2, previousLow2, waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, pl2, color = color.green, style = line.style_solid)
+//             drawLowLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, lowLocX2)), pl2, 'Big Stops', color = #00000000, textcolor = Mcolor, style = label.style_label_up, size = size.small)
+//             drawLowLabel2
+
+//         previousLow2 := pl2
+//         lowLocX2 := waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1
 
 
 
