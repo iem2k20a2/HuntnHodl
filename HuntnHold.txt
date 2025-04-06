@@ -88,7 +88,7 @@ htf_width           = input.int(1, "", inline = "D0", group = g_DWM)
 
 //i_time              = input.session     ('0000-0015:1234567', "New York", tooltip="Different exchanges will have difference time zones so change accordingly.")
 // MISC
-nymid               = time              ("1", '0000-0015:1234567', gmt_tz)
+nymid               = time              ("1", '0000-0000:1234567', gmt_tz)
 hourtime            = 86400000
 
 var l_det           = "Liquidity Detectors"
