@@ -46,10 +46,10 @@ var g_KZ            = "Killzones"
 show_kz             = input.bool(true, "Show Killzone Boxes", inline = "KZ", group = g_KZ)
 show_kz_text        = input.bool(true, "Display Text", inline = "KZ", group = g_KZ)
 
-use_asia            = input.bool(true, "ASIA", inline = "ASIA", group = g_KZ)
+//use_asia            = input.bool(true, "ASIA", inline = "ASIA", group = g_KZ)
 //as_txt              = input.string("Asia", "", inline = "ASIA", group = g_KZ)
 //asia                = input.session("2000-0000", "", inline = "ASIA", group = g_KZ)
-as_color            = input.color(color.blue, "", inline = "ASIA", group = g_KZ)
+//as_color            = input.color(color.blue, "", inline = "ASIA", group = g_KZ)
 
 use_london = input.bool(true, 'LDN', inline = 'LDN', group = g_KZ)
 //lo_txt = input.string('LDN', '', inline = 'LDN', group = g_KZ)
@@ -287,7 +287,7 @@ manage_kz(kz kz, bool use, bool t, color c, string box_txt, string hi_txt, strin
         adjust_in_kz(kz, t)
         adjust_out_kz(kz, t)
 
-manage_kz(as_kz, use_asia, t_as, as_color, "ASIA", "", "")
+//manage_kz(as_kz, use_asia, t_as, as_color, "ASIA", "", "")
 manage_kz(lo_kz, use_london, t_lo, lo_color, "LDN", "", "")
 manage_kz(na_kz, use_nyam, t_na, na_color, "HUNT",  "", "")
 manage_kz(nl_kz, use_nylu, t_nl, nl_color, "HODL",  "", "")
