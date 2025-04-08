@@ -46,6 +46,11 @@ var g_KZ            = "Killzones"
 show_kz             = input.bool(true, "Show Killzone Boxes", inline = "KZ", group = g_KZ)
 show_kz_text        = input.bool(true, "Display Text", inline = "KZ", group = g_KZ)
 
+use_asia            = input.bool(true, "ASIA", inline = "ASIA", group = g_KZ)
+//as_txt              = input.string("Asia", "", inline = "ASIA", group = g_KZ)
+//asia                = input.session("2000-0000", "", inline = "ASIA", group = g_KZ)
+as_color            = input.color(color.blue, "", inline = "ASIA", group = g_KZ)
+
 use_london = input.bool(true, 'LDN', inline = 'LDN', group = g_KZ)
 //lo_txt = input.string('LDN', '', inline = 'LDN', group = g_KZ)
 //london = input.session('0200-0500', '', inline = 'LDN', group = g_KZ)
@@ -69,41 +74,34 @@ np_color = input.color(#fcee73, '  Box', inline = 'NY', group = g_KZ)
 box_transparency    = input.int(80, "Box Transparency", 0, 100,inline = 'BX',  group = g_KZ)
 text_transparency   = input.int(40, "Text Transparency", 0, 100,inline = 'BX',   group = g_KZ)
 
-var g_DWM           = "Day - Week - Month"
-show_d_open         = input.bool(true, "NY Daily Open", inline = "DO", group = g_DWM)
-d_color             = input.color(#02acc3, "  Bar", inline = "DO", group = g_DWM)
-i_txtcol            = input.color(#02acc3, "  Text", inline="DO",  group = g_DWM)
+var g_DWM			= "Day - Week - Month"
+d_open				= input.bool(true, "NY Daily Open", inline = "DO", group = g_DWM)
+d_bar_color			= input.color(#02acc3, "  Bar", inline = "DO", group = g_DWM)
+d_txt_color			= input.color(#02acc3, "  Text", inline="DO",  group = g_DWM)
 
-show_w_open         = input.bool(true, "Weekly Open", inline = "WO", group = g_DWM)
-w_color             = input.color(#1848cc, "  Bar", inline = "WO", group = g_DWM)
-w_txt_color           = input.color(#1848cc, "  Text", inline = "WO", group = g_DWM)
+w_open				= input.bool(true, "Weekly Open", inline = "WO", group = g_DWM)
+w_bar_color			= input.color(#1848cc, "  Bar", inline = "WO", group = g_DWM)
+w_txt_color			= input.color(#1848cc, "  Text", inline = "WO", group = g_DWM)
 
-show_m_open         = input.bool(true, "Monthly Open", inline = "MO", group = g_DWM)
-m_color             = input.color(#ffeb3c, "  Bar", inline = "MO", group = g_DWM)
-m_txt_color         = input.color(#ffeb3c, "  Text", inline = "MO", group = g_DWM)
+m_open				= input.bool(true, "Monthly Open", inline = "MO", group = g_DWM)
+m_bar_color			= input.color(#ffeb3c, "  Bar", inline = "MO", group = g_DWM)
+m_txt_color        = input.color(#ffeb3c, "  Text", inline = "MO", group = g_DWM)
 
-htf_style           = get_line_type(input.string(defval = 'Solid', title = "Style", options = ['Solid', 'Dotted', 'Dashed'], inline = "D0", group = g_DWM))
-htf_width           = input.int(1, "", inline = "D0", group = g_DWM)
+dwn_bar_style		= get_line_type(input.string(defval = 'Solid', title = "Style", options = ['Solid', 'Dotted', 'Dashed'], inline = "D0", group = g_DWM))
+dwm_bar_width		= input.int(1, "", inline = "D0", group = g_DWM)
 
-
-//i_time              = input.session     ('0000-0015:1234567', "New York", tooltip="Different exchanges will have difference time zones so change accordingly.")
-// MISC
-nymid               = time              ("1", '0000-0000:1234567', gmt_tz)
+nymid               = time              ("1", '0000-0001:1234567', gmt_tz)
 hourtime            = 86400000
 
-var l_det           = "Liquidity Detectors"
+var g_lqd           = "Liquidity Detectors"
 
-g_EHL_E = input.bool(true, 'Enable Stops', inline="EHL", group = l_det)
-waitForConfirmation = input.bool(true, 'Wait For Confirmation', inline="EHL", group = l_det)
-mcolor             = input.color(color.rgb(148, 148, 148), "  Label", inline = "EHL", group = l_det)
+enable_EHL = input.bool(true, 'Enable Stops', inline="EHL", group = g_lqd)
+waitForConfirmation = input.bool(true, 'Wait For Confirmation', inline="EHL", group = g_lqd)
+mcolor             = input.color(color.rgb(148, 148, 148), "  Label", inline = "EHL", group = g_lqd)
 
-g_EHL_E2 = input.bool(true, 'Enable Big Stops', inline="EHL2", group = l_det)
-waitForConfirmation2 = input.bool(true, 'Wait For Confirmation', inline="EHL2",  group = l_det)
-Mcolor             = input.color(color.rgb(148, 148, 148), "  Label", inline = "EHL2", group = l_det)
-
-// g_EHL_E3 = input.bool(true, 'Enable Big Stops', inline="EHL3", group = l_det)
-// waitForConfirmation3 = input.bool(true, 'Wait For Confirmation', inline="EHL3",  group = l_det)
-// ecolor             = input.color(color.rgb(148, 148, 148), "  Label", inline = "EHL3", group = l_det)
+enable_EHL2 = input.bool(true, 'Enable Big Stops', inline="EHL2", group = g_lqd)
+waitForConfirmation2 = input.bool(true, 'Wait For Confirmation', inline="EHL2",  group = g_lqd)
+Mcolor             = input.color(color.rgb(148, 148, 148), "  Label", inline = "EHL2", group = g_lqd)
 
 // ---------------------------------------- Inputs --------------------------------------------------
 
@@ -149,6 +147,7 @@ type dwm_info
     float ph = na
     float pl = na
 
+var as_kz = kz.new("ASIA", array.new_box(), array.new_line(), array.new_line(), array.new_line(), array.new_label(), array.new_label(), array.new_bool(), array.new_bool(), array.new_bool(), array.new_float())
 var lo_kz = kz.new("LDN", array.new_box(), array.new_line(), array.new_line(), array.new_line(), array.new_label(), array.new_label(), array.new_bool(), array.new_bool(), array.new_bool(), array.new_float())
 var na_kz = kz.new("HUNT", array.new_box(), array.new_line(), array.new_line(), array.new_line(), array.new_label(), array.new_label(), array.new_bool(), array.new_bool(), array.new_bool(), array.new_float())
 var nl_kz = kz.new("HODL", array.new_box(), array.new_line(), array.new_line(), array.new_line(), array.new_label(), array.new_label(), array.new_bool(), array.new_bool(), array.new_bool(), array.new_float())
@@ -162,6 +161,7 @@ var d_info = dwm_info.new("D")
 var w_info = dwm_info.new("W")
 var m_info = dwm_info.new("M")
 
+t_as = not na(time("", "2000-0000", gmt_tz))
 t_lo = not na(time("", "0200-0500", gmt_tz))
 t_na = not na(time("", "0700-1200", gmt_tz))
 t_nl = not na(time("", "1200-1915", gmt_tz))
@@ -197,11 +197,11 @@ update_dwm_info(dwm_info n) =>
         n.h := math.max(high, n.h)
         n.l := math.min(low,  n.l)
 
-if show_d_open
+if d_open
     update_dwm_info(d_info)
-if show_w_open
+if w_open
     update_dwm_info(w_info)
-if show_m_open
+if m_open
     update_dwm_info(m_info)
 // ---------------------------------------- Variables & Constants --------------------------------------------------
 
@@ -219,7 +219,7 @@ get_text_color(color c) =>
 dwm_sep(string tf, bool use, line[] arr, color col) =>
     if use
         if timeframe.change(tf)
-            arr.unshift(line.new(bar_index, high * 1.0001, bar_index, low, style = htf_style, width = htf_width, extend = extend.both, color = col))
+            arr.unshift(line.new(bar_index, high * 1.0001, bar_index, low, style = dwn_bar_style, width = dwm_bar_width, extend = extend.both, color = col))
                 
 
 w_open(string tf, bool use, line[] lns, label[] lbls, dwm_info n, color col) =>
@@ -228,7 +228,7 @@ w_open(string tf, bool use, line[] lns, label[] lbls, dwm_info n, color col) =>
             lns.get(0).set_x2(time)
             lbls.get(0).set_x(time)
         if timeframe.change(tf)
-            lns.unshift(line.new(time, n.o, time, n.o, xloc = xloc.bar_time, style = htf_style, width = htf_width, color = col))
+            lns.unshift(line.new(time, n.o, time, n.o, xloc = xloc.bar_time, style = dwn_bar_style, width = dwm_bar_width, color = col))
             lbls.unshift(label.new(nymid + hourtime, open, "Weekly Open | " + str.tostring(math.round_to_mintick(open)), xloc.bar_time, yloc.price, na, label.style_none, w_txt_color))
 
 m_open(string tf, bool use, line[] lns, label[] lbls, dwm_info n, color col) =>
@@ -237,13 +237,13 @@ m_open(string tf, bool use, line[] lns, label[] lbls, dwm_info n, color col) =>
             lns.get(0).set_x2(time)
             lbls.get(0).set_x(time)
         if timeframe.change(tf)
-            lns.unshift(line.new(time, n.o, time, n.o, xloc = xloc.bar_time, style = htf_style, width = htf_width, color = col))
+            lns.unshift(line.new(time, n.o, time, n.o, xloc = xloc.bar_time, style = dwn_bar_style, width = dwm_bar_width, color = col))
             lbls.unshift(label.new(nymid + hourtime, open, "Monthly Open | " + str.tostring(math.round_to_mintick(open)), xloc.bar_time, yloc.price, na, label.style_none, m_txt_color))
 
 dwm() =>
     if timeframe.in_seconds("") <= timeframe.in_seconds(tf_limit)
-        w_open("W", show_w_open, w_line, w_label, w_info, w_color)
-        m_open("M", show_m_open, m_line, m_label, m_info, m_color)
+        w_open("W", w_open, w_line, w_label, w_info, w_bar_color)
+        m_open("M", m_open, m_line, m_label, m_info, m_bar_color)
 
 
 del_kz(kz k) =>
@@ -287,6 +287,7 @@ manage_kz(kz kz, bool use, bool t, color c, string box_txt, string hi_txt, strin
         adjust_in_kz(kz, t)
         adjust_out_kz(kz, t)
 
+manage_kz(as_kz, use_asia, t_as, as_color, "ASIA", "", "")
 manage_kz(lo_kz, use_london, t_lo, lo_color, "LDN", "", "")
 manage_kz(na_kz, use_nyam, t_na, na_color, "HUNT",  "", "")
 manage_kz(nl_kz, use_nylu, t_nl, nl_color, "HODL",  "", "")
@@ -303,72 +304,17 @@ if nymid
 
 // OBJECTS
 var label lb = na
-if openprice != openprice[1] and show_d_open
+if openprice != openprice[1] and d_open
     var line lne = na
     line.set_x2(lne, nymid)
     line.set_extend(lne, extend.none)
-    lne := line.new(nymid, openprice, nymid + hourtime , openprice, xloc.bar_time, extend.none, d_color, htf_style, htf_width)
-    lb  := label.new(nymid + hourtime, openprice, "Daily Open | " + str.tostring(math.round_to_mintick(openprice)), xloc.bar_time, yloc.price, na, label.style_none, i_txtcol)
+    lne := line.new(nymid, openprice, nymid + hourtime , openprice, xloc.bar_time, extend.none, d_txt_color, dwn_bar_style, dwm_bar_width)
+    lb  := label.new(nymid + hourtime, openprice, "Daily Open | " + str.tostring(math.round_to_mintick(openprice)), xloc.bar_time, yloc.price, na, label.style_none, d_txt_color)
     label.delete(lb[1])
 
 
-// if g_EHL_E
-//     print_eql(5, 200, 0.10, 'Stops', mcolor)
-
-// if g_EHL_E
-//     var pivotLength = 5
-//     var confluenceAtrLength = 200
-//     var threshold = 0.10
-//     atr = ta.atr(confluenceAtrLength)
-
-//     ph = ta.pivothigh(pivotLength, 1)
-//     pl = ta.pivotlow(pivotLength, 1)
-
-//     if waitForConfirmation
-//         ph := ta.pivothigh(pivotLength, pivotLength)
-//         pl := ta.pivotlow(pivotLength, pivotLength)
-//         pl
-
-//     var previousHigh = 0.
-//     var highLocX = 0
-
-//     if bool(ph)
-//         max = math.max(ph, previousHigh)
-//         min = math.min(ph, previousHigh)
-
-//         if max < min + atr * threshold
-//             drawHighLine = line.new(highLocX, previousHigh, waitForConfirmation ? bar_index - pivotLength : bar_index - 1, ph, color = color.red, style = line.style_solid)
-//             drawHighLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, highLocX)), ph, 'Stops', color = #00000000, textcolor =  mcolor, style = label.style_label_down, size = size.small)
-//             drawHighLabel
-
-//         previousHigh := ph
-//         highLocX := waitForConfirmation ? bar_index - pivotLength : bar_index - 1
-//         highLocX
-
-//     var previousLow = 0.
-//     var lowLocX = 0
-
-//     if bool(pl)
-//         max = math.max(pl, previousLow)
-//         min = math.min(pl, previousLow)
-
-//         if min > max - atr * threshold
-//             drawLowLine = line.new(lowLocX, previousLow, waitForConfirmation ? bar_index - pivotLength : bar_index - 1, pl, color = color.green, style = line.style_solid)
-//             drawLowLabel = label.new(int(math.avg(waitForConfirmation ? bar_index - pivotLength : bar_index - 1, lowLocX)), pl, 'Stops', color = #00000000, textcolor = mcolor, style = label.style_label_up, size = size.small)
-//             drawLowLabel
-
-//         previousLow := pl
-//         lowLocX := waitForConfirmation ? bar_index - pivotLength : bar_index - 1
-
-
-
-
 print_eql(int pivotLength, int confluenceAtrLength, float threshold, bool waitForC, string title, color eColor) =>
-    //var pivotLength = 5
-    //var confluenceAtrLength = 200
-    //var threshold = 0.10
     atr = ta.atr(confluenceAtrLength)
-
     ph = ta.pivothigh(pivotLength, 1)
     pl = ta.pivotlow(pivotLength, 1)
 
@@ -408,59 +354,10 @@ print_eql(int pivotLength, int confluenceAtrLength, float threshold, bool waitFo
         previousLow := pl
         lowLocX := waitForConfirmation ? bar_index - pivotLength : bar_index - 1
 
-if g_EHL_E
+if enable_EHL
     print_eql(5, 200, 0.1, waitForConfirmation, 'Stops', mcolor)
     print_eql(9, 200, 0.1, waitForConfirmation, 'Stops', mcolor)
 
-if g_EHL_E2
+if enable_EHL2
     print_eql(40, 500, 0.2, waitForConfirmation2, 'Big Stops', Mcolor)
-
-
-// if g_EHL_E2
-//     var pivotLength2 = 40
-//     var confluenceAtrLength2 = 500
-//     var threshold2 = 0.20
-//     atr2 = ta.atr(confluenceAtrLength2)
-
-//     ph2 = ta.pivothigh(pivotLength2, 1)
-//     pl2 = ta.pivotlow(pivotLength2, 1)
-
-//     if waitForConfirmation2
-//         ph2 := ta.pivothigh(pivotLength2, pivotLength2)
-//         pl2 := ta.pivotlow(pivotLength2, pivotLength2)
-//         pl2
-
-//     var previousHigh2 = 0.
-//     var highLocX2 = 0
-
-//     if bool(ph2)
-//         max2 = math.max(ph2, previousHigh2)
-//         min2 = math.min(ph2, previousHigh2)
-
-//         if max2 < min2 + atr2 * threshold2
-//             drawHighLine2 = line.new(highLocX2, previousHigh2, waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, ph2, color = color.red, style = line.style_solid)
-//             drawHighLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, highLocX2)), ph2, 'Big Stops', color = #00000000, textcolor = Mcolor, style = label.style_label_down, size = size.small)
-//             drawHighLabel2
-
-//         previousHigh2 := ph2
-//         highLocX2 := waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1
-//         highLocX2
-
-//     var previousLow2 = 0.
-//     var lowLocX2 = 0
-
-//     if bool(pl2)
-//         max2 = math.max(pl2, previousLow2)
-//         min2 = math.min(pl2, previousLow2)
-
-//         if min2 > max2 - atr2 * threshold2
-//             drawLowLine2 = line.new(lowLocX2, previousLow2, waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, pl2, color = color.green, style = line.style_solid)
-//             drawLowLabel2 = label.new(int(math.avg(waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1, lowLocX2)), pl2, 'Big Stops', color = #00000000, textcolor = Mcolor, style = label.style_label_up, size = size.small)
-//             drawLowLabel2
-
-//         previousLow2 := pl2
-//         lowLocX2 := waitForConfirmation2 ? bar_index - pivotLength2 : bar_index - 1
-
-
-
 // ---------------------------------------- Core Logic --------------------------------------------------
